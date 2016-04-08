@@ -5,47 +5,62 @@
  */
 package droneapplication;
 
-import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
+import java.util.Scanner;
 
 /**
  *
  * @author Julian
  */
-public class DroneApplication extends Application {
+public class DroneApplication implements Runnable{
     
-    @Override
-    public void start(Stage primaryStage) {
-        Button btn = new Button();
-        btn.setText("Say 'Hello World'");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
-            }
-        });
-        
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);
-        
-        Scene scene = new Scene(root, 300, 250);
-        
-        primaryStage.setTitle("Hello World!");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
-
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
-        launch(args);
-    }
+		new DroneApplication().start();
+	}
+
+	String ip = "0.0.0.0";
+
+	public void start() {
+		try {
+			this.socket = new Socket(ip, 80);
+			new Thread(this).start();
+			Scanner scanner = new Scanner(System.in);
+
+			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+                        
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	Socket socket;
+	String name = "";
+
+	@Override
+	public void run() {
+		try {
+			DataInputStream in = new DataInputStream(socket.getInputStream());
+			while (true) {
+				String line = in.readUTF();
+				if (line == null) {
+					Thread.sleep(10);
+				}else {
+					messageRecieved(line);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private void messageRecieved(String line) {
+		String[] splitted = line.split("`");
+		if (!splitted[0].equals(name))
+			System.out.println(splitted[0] + ":   " + splitted[1]);
+	}
     
 }
