@@ -12,12 +12,15 @@ import java.time.Duration;
  * @author Julian
  */
 public class Drone {
+    private Thread t;
     private int id = 0;
     private int startX;
     private int targetX;
     private int startY;
     private int targetY;
     private int speed = 0;
+    private int x;
+    private int y;
     private Duration tick;
     private enum Direction{
         N, NE, E, SE, S, SW, W, NW
@@ -33,6 +36,8 @@ public class Drone {
         this.speed = speed;
         this.tick = tick;
         this.direction = direction;
+        this.x = this.startX;
+        this.y = this.startY;
     }
 
     public Drone(int startX, int startY, int targetX, int targetY) {
@@ -40,6 +45,8 @@ public class Drone {
         this.targetX = targetX;
         this.startY = startY;
         this.targetY = targetY;
+        this.x = this.startX;
+        this.y = this.startY;
     }
     
     
@@ -112,4 +119,55 @@ public class Drone {
         this.direction = direction;
     }
     
+    public void startMoveByTick(){
+        t= new Thread(new Runnable() {
+            @Override
+            public void run() {
+                
+            }
+        });
+        t.start();
+    }
+    
+    public void move(){
+        int test = this.speed;
+        switch(this.direction){
+            case N:
+                this.y += this.speed;
+                break;
+            case E:
+                this.x += this.speed;
+                break;
+            case S:
+                this.y -= this.speed;
+                break;
+            case W:
+                this.x -= this.speed;
+                break;
+            case NE:
+                for (int i = 0; i < test; i++) {
+                    this.y += this.speed;
+                    this.x += this.speed;
+                }
+                break;
+            case NW:
+                for (int i = 0; i < test; i++) {
+                    this.y += this.speed;
+                    this.x -= this.speed;
+                }
+                break;
+            case SE:
+                for (int i = 0; i < test; i++) {
+                    this.y -= this.speed;
+                    this.x += this.speed;
+                }
+                break;
+            case SW:
+                for (int i = 0; i < test; i++) {
+                    this.y -= this.speed;
+                    this.x -= this.speed;
+                }
+                break;
+        }
+    }
 }
